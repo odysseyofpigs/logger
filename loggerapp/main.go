@@ -6,7 +6,7 @@ import (
         "strings"
         "bufio"
         "os"
-        "github.com/odysseyofpigs/logger/login"
+        "github.com/odysseyofpigs/loggerapplication/login"
 )
 
 func main() {
@@ -66,7 +66,7 @@ func appCall(input string, user login.User) login.User {
                 var loginStat bool
                 user, loginStat = login.LoginCall(user)
                 if loginStat {
-                        fmt.Println("%d has logged in!\n")
+                        fmt.Printf("%d has logged in!\n", user.Username)
                 }
                 break
         case "newuser":
@@ -74,7 +74,7 @@ func appCall(input string, user login.User) login.User {
                 break
         case "newlog":
                 // check if the user is logged in
-                if user.Username == "guest" {
+                if user.Username == "guest" && user.Filename == "" {
                         fmt.Println("Error: not logged in\n")
                 } else {
                         fmt.Println("creating new log for %s\n", user.Username)
@@ -95,6 +95,8 @@ func helpCall() {
         fmt.Println("--------------------------------------------")
         fmt.Println("login   :: login to your account")
         fmt.Println("newuser :: create a new user account")
+        fmt.Println("\nLogged in Functionality::")
+        fmt.Println("newlog  :: create a new log entry")
 }
 
 
