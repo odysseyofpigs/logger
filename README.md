@@ -10,3 +10,12 @@ sqlite3 drivers.
 
 Next step is to create [user]_log.txt files for each individual user within the 
 system so that writes can be stored independently.
+
+# Dependencies
+
+https://github.com/mattn/go-sqlite3
+
+# Optimization
+
+Change functions to take User struct pointers to avoid construction of new User 
+structures and returns. 
