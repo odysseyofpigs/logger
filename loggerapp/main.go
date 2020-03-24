@@ -66,7 +66,7 @@ func appCall(input string, user login.User) login.User {
                 var loginStat bool
                 user, loginStat = login.LoginCall(user)
                 if loginStat {
-                        fmt.Printf("%d has logged in!\n", user.Username)
+                        fmt.Printf("%s has logged in!\n\n", user.Username)
                 }
                 break
         case "newuser":
@@ -77,7 +77,7 @@ func appCall(input string, user login.User) login.User {
                 if user.Username == "guest" && user.Filename == "" {
                         fmt.Println("Error: not logged in\n")
                 } else {
-                        fmt.Println("creating new log for %s\n", user.Username)
+                        fmt.Printf("creating new log for %s\n", user.Username)
                 }
                 break
         default:
