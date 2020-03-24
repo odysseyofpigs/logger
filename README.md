@@ -20,9 +20,9 @@ username, date, and time.
 
 https://github.com/mattn/go-sqlite3
 
-# Optimization
+# Future Optimization
 
-Change functions to take User struct pointers to avoid construction of new User 
+* Change functions to take User struct pointers to avoid construction of new User 
 structures and returns.
-Move all user structure functionality to a new package to keep it separated from the 
+* Move all user structure functionality to a new package to keep it separated from the 
 login package.
