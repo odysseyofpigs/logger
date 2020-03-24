@@ -7,6 +7,7 @@ import (
         "bufio"
         "os"
         "github.com/odysseyofpigs/loggerapplication/login"
+        "github.com/odysseyofpigs/loggerapplication/writelog"
 )
 
 func main() {
@@ -78,6 +79,8 @@ func appCall(input string, user login.User) login.User {
                         fmt.Println("Error: not logged in\n")
                 } else {
                         fmt.Printf("creating new log for %s\n", user.Username)
+                        // create a new log entry for the user
+                        writelog.NewEntry(user)
                 }
                 break
         default:
@@ -95,8 +98,10 @@ func helpCall() {
         fmt.Println("--------------------------------------------")
         fmt.Println("login   :: login to your account")
         fmt.Println("newuser :: create a new user account")
+        fmt.Println("who     :: lists current login session credentials")
         fmt.Println("\nLogged in Functionality::")
         fmt.Println("newlog  :: create a new log entry")
+        fmt.Println("listall :: lists all users within the system")
 }
 
 
