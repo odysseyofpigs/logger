@@ -1,6 +1,6 @@
-# Logger
+# LoggerApp
 
-Simple logger application that acts as a simplified blogging software.
+Simple logger application that acts as a simplified logging/blogging software.
 Information is read and stored to a target file.
 
 So far the program allows the user to log into the system if they have a 
