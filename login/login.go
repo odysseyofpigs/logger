@@ -15,6 +15,7 @@ import (
 type User struct {
         ID int
         Username string
+        Filename string
 }
 
 
@@ -37,6 +38,7 @@ func LoginCall(user User) (User, bool) {
 
         // obtain login credentials
         username, password := getCreds()
+        filename := username + "_log.txt"
 
         // create a connection with the database
         database, _ = sql.Open("sqlite3", "./userlog.db")
@@ -52,7 +54,7 @@ func LoginCall(user User) (User, bool) {
                 fmt.Println("create user with 'newuser' command\n")
                 return user, false
         case nil:
-                return User{id, username}, true
+                return User{id, username, filename}, true
         default:
                 log.Fatal(err)
         }
@@ -62,7 +64,7 @@ func LoginCall(user User) (User, bool) {
 
 
 /**
- * NewUser generates
+ * NewUser generates a new profile and insert user credentials into the database
  */
 func NewUser(user User) User {
         // declare the database variable
@@ -115,7 +117,8 @@ func createTable(db *sql.DB) {
         create := `CREATE TABLE users (
                 "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
                 "Username" TEXT,
-                "Password" TEXT
+                "Password" TEXT,
+                "Filename" TEXT
                 );`
 
         statement, err := db.Prepare(create)
@@ -130,28 +133,30 @@ func createTable(db *sql.DB) {
  */
 func insertTable(db *sql.DB, username string, password string) User {
         fmt.Println("generating new user profile...")
+        filename := username + "_log.txt"
 
-        insert := `INSERT INTO users(Username, Password) VALUES (?, ?)`
+        insert := `INSERT INTO users(Username, Password, Filename) VALUES (?, ?, ?)`
         // prepare to insert information into the table of the database
         statement, err := db.Prepare(insert)
         errCheck(err)
-        _, err = statement.Exec(username, password)
+        _, err = statement.Exec(username, password, filename)
         errCheck(err)
 
         // select id from database
-        row := db.QueryRow("SELECT id FROM users WHERE Username=$1 AND Password=$2", username, password)
+        row := db.QueryRow("SELECT id FROM users WHERE Username=$1 AND Password=$2",
+                username, password)
         var id int
         switch err := row.Scan(&id); err {
         case sql.ErrNoRows:
                 fmt.Println("Could not create user...")
-                return User{0, "guest"}
+                return User{0, "guest", ""}
         case nil:
                 fmt.Println("New user has been created!\n")
-                return User{id, username}
+                return User{id, username, filename}
         default:
                 log.Fatal(err)
         }
-        return User{0, "guest"}
+        return User{0, "guest", ""}
 }
 
 
@@ -169,6 +174,19 @@ func getCreds() (string, string) {
         username := strings.Trim(u, "\n")
         password := strings.Trim(p, "\n")
         return username, password
+}
+
+
+/**
+ * DisplayUser displays the current logged in user
+ */
+func DisplayUser(user User) {
+        fmt.Println("User Logged in::")
+        fmt.Println("--------------------")
+        fmt.Printf("ID      : %d\n", user.ID)
+        fmt.Printf("Username: %s\n", user.Username)
+        fmt.Printf("log file: %s\n", user.Filename)
+        fmt.Print("\n")
 }
 
 

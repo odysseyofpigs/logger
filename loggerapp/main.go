@@ -15,7 +15,7 @@ func main() {
         fmt.Println("type: 'help' for assistance\n")
 
         /* initialize user information */
-        user := login.User{0, "guest"}
+        user := login.User{0, "guest", ""}
 
         /* read user input */
         input := readInput()
@@ -59,6 +59,9 @@ func appCall(input string, user login.User) login.User {
         case "help":
                 helpCall()
                 break
+        case "who":
+                login.DisplayUser(user)
+                break
         case "login":
                 var loginStat bool
                 user, loginStat = login.LoginCall(user)
@@ -68,6 +71,14 @@ func appCall(input string, user login.User) login.User {
                 break
         case "newuser":
                 user = login.NewUser(user)
+                break
+        case "newlog":
+                // check if the user is logged in
+                if user.Username == "guest" {
+                        fmt.Println("Error: not logged in\n")
+                } else {
+                        fmt.Println("creating new log for %s\n", user.Username)
+                }
                 break
         default:
                 fmt.Println("::unknown command given::\n")
