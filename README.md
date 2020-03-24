@@ -10,7 +10,11 @@ sqlite3 drivers listed under dependencies. The program Creates [user]_log.txt
 files for each individual user within the system so that writes can be stored 
 independently.
 
-Next step is to allow writes to a file from standard input.
+The program allows you to create a new log under your user profile and store it 
+within a personaalized [user]_log.txt file within the 'logs' directory. The program 
+will read up to a set buffer size and append it to the .txt file under the specified 
+username, date, and time.
+
 
 # Dependencies
 
