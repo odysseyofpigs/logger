@@ -20,6 +20,12 @@ username, date, and time.
 
 https://github.com/mattn/go-sqlite3
 
+# Installation
+
+```bash
+go get github.com/odysseyofpigs/loggerapplication
+```
+
 # Future Optimization
 
 * Change functions to take User struct pointers to avoid construction of new User 
