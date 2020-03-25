@@ -7,16 +7,10 @@ import (
         "os"
         "bufio"
         "database/sql"
+        "github.com/odysseyofpigs/loggerapplication/userlib"
         // driver for sqlite3 operations
         _ "github.com/mattn/go-sqlite3"
 )
-
-// User structure holds current user information
-type User struct {
-        ID int
-        Username string
-        Filename string
-}
 
 
 /**
@@ -24,14 +18,14 @@ type User struct {
     if the credentials exist the function will return
     the user structure with specidied ID and username
  */
-func LoginCall(user User) (User, bool) {
+func LoginCall(user userlib.User) (userlib.User, bool) {
         // declare the database variable
         var database *sql.DB
 
         // check that the database exists
         if _, err := os.Stat("userlog.db"); os.IsNotExist(err) {
                 // the database does not exist, create a new one
-                CreateDataBase(database)
+                userlib.CreateDataBase(database)
                 fmt.Println("create new user with 'newuser' command\n")
                 return user, false
         }
@@ -54,7 +48,7 @@ func LoginCall(user User) (User, bool) {
                 fmt.Println("create user with 'newuser' command\n")
                 return user, false
         case nil:
-                return User{id, username, filename}, true
+                return userlib.User{id, username, filename}, true
         default:
                 log.Fatal(err)
         }
@@ -66,14 +60,14 @@ func LoginCall(user User) (User, bool) {
 /**
  * NewUser generates a new profile and insert user credentials into the database
  */
-func NewUser(user User) User {
+func NewUser(user userlib.User) userlib.User {
         // declare the database variable
         var database *sql.DB
 
         // check that the database exists
         if _, err := os.Stat("userlog.db"); os.IsNotExist(err) {
                 // if userlog does not exist, create database
-                CreateDataBase(database)
+                userlib.CreateDataBase(database)
         }
 
         // connect to the userlog database
@@ -89,49 +83,9 @@ func NewUser(user User) User {
 
 
 /**
- * CreateDataBase creates a new database file and initializes the table for it
- */
-func CreateDataBase(db *sql.DB) {
-        fmt.Println("No database found....creating new database")
-        // create new database file
-        file, err := os.Create("userlog.db")
-        errCheck(err)
-        fmt.Println("database creation...complete")
-        //close the created file
-        file.Close()
-
-        // initialize the database with a new table
-        db, _ = sql.Open("sqlite3", "./userlog.db")
-        defer db.Close()
-
-        //populate database with table
-        createTable(db)
-        fmt.Println("database table initialization...complete")
-}
-
-
-/**
- * createTable initializes the given database with a new table
- */
-func createTable(db *sql.DB) {
-        create := `CREATE TABLE users (
-                "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-                "Username" TEXT,
-                "Password" TEXT,
-                "Filename" TEXT
-                );`
-
-        statement, err := db.Prepare(create)
-        errCheck(err)
-        // execute the statement prepared
-        statement.Exec()
-}
-
-
-/**
  * insertTable inserts the given username and password to the database table
  */
-func insertTable(db *sql.DB, username string, password string) User {
+func insertTable(db *sql.DB, username string, password string) userlib.User {
         fmt.Println("generating new user profile...")
         filename := username + "_log.txt"
 
@@ -149,14 +103,14 @@ func insertTable(db *sql.DB, username string, password string) User {
         switch err := row.Scan(&id); err {
         case sql.ErrNoRows:
                 fmt.Println("Could not create user...")
-                return User{0, "guest", ""}
+                return userlib.User{0, "guest", ""}
         case nil:
                 fmt.Println("New user has been created!\n")
-                return User{id, username, filename}
+                return userlib.User{id, username, filename}
         default:
                 log.Fatal(err)
         }
-        return User{0, "guest", ""}
+        return userlib.User{0, "guest", ""}
 }
 
 
@@ -180,7 +134,7 @@ func getCreds() (string, string) {
 /**
  * DisplayUser displays the current logged in user
  */
-func DisplayUser(user User) {
+func DisplayUser(user userlib.User) {
         fmt.Println("User Logged in::")
         fmt.Println("--------------------")
         fmt.Printf("ID      : %d\n", user.ID)

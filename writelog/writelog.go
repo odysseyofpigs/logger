@@ -7,13 +7,13 @@ import (
         "strings"
         "log"
         "bufio"
-        "github.com/odysseyofpigs/loggerapplication/login"
+        "github.com/odysseyofpigs/loggerapplication/userlib"
 )
 
 /**
  * NewEntry creates a new entry to the log.txt file
  */
-func NewEntry(user login.User) {
+func NewEntry(user userlib.User) {
         // define file path
         prevDir, _ := os.Getwd()
 
