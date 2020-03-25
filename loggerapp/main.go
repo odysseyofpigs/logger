@@ -8,6 +8,7 @@ import (
         "os"
         "github.com/odysseyofpigs/loggerapplication/login"
         "github.com/odysseyofpigs/loggerapplication/writelog"
+        "github.com/odysseyofpigs/loggerapplication/userlib"
 )
 
 func main() {
@@ -16,7 +17,7 @@ func main() {
         fmt.Println("type: 'help' for assistance\n")
 
         /* initialize user information */
-        user := login.User{0, "guest", ""}
+        user := userlib.User{0, "guest", ""}
 
         /* read user input */
         input := readInput()
@@ -55,7 +56,7 @@ func readInput() string {
 /**
  * appCall handles the function call given by the user
  */
-func appCall(input string, user login.User) login.User {
+func appCall(input string, user userlib.User) userlib.User {
         switch input {
         case "help":
                 helpCall()
@@ -83,6 +84,16 @@ func appCall(input string, user login.User) login.User {
                         writelog.NewEntry(user)
                 }
                 break
+        case "listall":
+                fmt.Print("\n")
+                userlib.ListAll()
+                break
+        case "logout":
+                fmt.Printf("Logging %s out...", user.Username)
+                user.ID = 0
+                user.Username = "guest"
+                user.Filename = ""
+                break
         default:
                 fmt.Println("::unknown command given::\n")
         } // end of switch
@@ -94,7 +105,7 @@ func appCall(input string, user login.User) login.User {
  * helpCall the base help menu
  */
 func helpCall() {
-        fmt.Println("Help Screen::")
+        fmt.Println("\nHelp Screen::")
         fmt.Println("--------------------------------------------")
         fmt.Println("login   :: login to your account")
         fmt.Println("newuser :: create a new user account")
@@ -102,6 +113,8 @@ func helpCall() {
         fmt.Println("\nLogged in Functionality::")
         fmt.Println("newlog  :: create a new log entry")
         fmt.Println("listall :: lists all users within the system")
+        fmt.Println("logout  :: logs the current user out, changes to guest")
+        fmt.Print("\n")
 }
 
 
