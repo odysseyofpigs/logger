@@ -66,13 +66,13 @@ func appCall(input string, user userlib.User) userlib.User {
                 break
         case "login":
                 var loginStat bool
-                user, loginStat = login.LoginCall(user)
+                loginStat = login.LoginCall(&user)
                 if loginStat {
                         fmt.Printf("%s has logged in!\n\n", user.Username)
                 }
                 break
         case "newuser":
-                user = login.NewUser(user)
+                login.NewUser(&user)
                 break
         case "newlog":
                 // check if the user is logged in
@@ -85,14 +85,22 @@ func appCall(input string, user userlib.User) userlib.User {
                 }
                 break
         case "listall":
-                fmt.Print("\n")
-                userlib.ListAll()
+                if user.Username == "guest" && user.Filename == ""{
+                        fmt.Println("Error: not logged in\n")
+                } else {
+                        fmt.Print("\n")
+                        userlib.ListAll()
+                }
                 break
         case "logout":
-                fmt.Printf("Logging %s out...", user.Username)
-                user.ID = 0
-                user.Username = "guest"
-                user.Filename = ""
+                if user.Username == "guest" && user.Filename == "" {
+                        fmt.Println("Error: not logged in\n")
+                } else {
+                        fmt.Printf("Logging %s out...", user.Username)
+                        user.ID = 0
+                        user.Username = "guest"
+                        user.Filename = ""
+                }
                 break
         default:
                 fmt.Println("::unknown command given::\n")

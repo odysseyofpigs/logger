@@ -13,12 +13,11 @@ import (
 )
 
 
-/**
- * LoginCall checks the user credentials against database
-    if the credentials exist the function will return
-    the user structure with specidied ID and username
- */
-func LoginCall(user userlib.User) (userlib.User, bool) {
+
+// LoginCall checks the user credentials against database
+// if the credentials exist the function will return
+// true and change the user struct credentials, false otherwise
+func LoginCall(user *userlib.User) bool {
         // declare the database variable
         var database *sql.DB
 
@@ -27,7 +26,7 @@ func LoginCall(user userlib.User) (userlib.User, bool) {
                 // the database does not exist, create a new one
                 userlib.CreateDataBase(database)
                 fmt.Println("create new user with 'newuser' command\n")
-                return user, false
+                return false
         }
 
         // obtain login credentials
@@ -46,21 +45,24 @@ func LoginCall(user userlib.User) (userlib.User, bool) {
         case sql.ErrNoRows:
                 fmt.Println("user does not exist")
                 fmt.Println("create user with 'newuser' command\n")
-                return user, false
+                return false
         case nil:
-                return userlib.User{id, username, filename}, true
+                user.ID = id
+                user.Username = username
+                user.Filename = filename
+                return true
         default:
                 log.Fatal(err)
         }
 
-        return user, false
+        return false
 }
 
 
-/**
- * NewUser generates a new profile and insert user credentials into the database
- */
-func NewUser(user userlib.User) userlib.User {
+
+// NewUser generates a new profile and insert user credentials into the database
+// the new user is automatically logged in to the system
+func NewUser(user *userlib.User) {
         // declare the database variable
         var database *sql.DB
 
@@ -75,17 +77,32 @@ func NewUser(user userlib.User) userlib.User {
 
         // insert new user to database
         username, password := getCreds()
-        newuser := insertTable(database, username, password)
+        insertTable(database, username, password)
+        // select id from database
+        row := database.QueryRow("SELECT id FROM users WHERE Username=$1 AND Password=$2",
+                username, password)
+        var id int
+        switch err := row.Scan(&id); err {
+        case sql.ErrNoRows:
+                fmt.Println("User generation...failure")
+                fmt.Println("Could not find new user...exiting")
+                os.Exit(1)
+        case nil:
+                fmt.Println("New user has been created!\n")
+                user.ID = id
+                user.Username = username
+                user.Filename = username + "_log.txt"
+        default:
+                log.Fatal(err)
+        }
         database.Close()
-
-        return newuser
 }
 
 
 /**
  * insertTable inserts the given username and password to the database table
  */
-func insertTable(db *sql.DB, username string, password string) userlib.User {
+func insertTable(db *sql.DB, username string, password string) {
         fmt.Println("generating new user profile...")
         filename := username + "_log.txt"
 
@@ -95,22 +112,6 @@ func insertTable(db *sql.DB, username string, password string) userlib.User {
         errCheck(err)
         _, err = statement.Exec(username, password, filename)
         errCheck(err)
-
-        // select id from database
-        row := db.QueryRow("SELECT id FROM users WHERE Username=$1 AND Password=$2",
-                username, password)
-        var id int
-        switch err := row.Scan(&id); err {
-        case sql.ErrNoRows:
-                fmt.Println("Could not create user...")
-                return userlib.User{0, "guest", ""}
-        case nil:
-                fmt.Println("New user has been created!\n")
-                return userlib.User{id, username, filename}
-        default:
-                log.Fatal(err)
-        }
-        return userlib.User{0, "guest", ""}
 }
 
 
@@ -131,9 +132,8 @@ func getCreds() (string, string) {
 }
 
 
-/**
- * DisplayUser displays the current logged in user
- */
+
+// DisplayUser displays the current logged in user
 func DisplayUser(user userlib.User) {
         fmt.Println("User Logged in::")
         fmt.Println("--------------------")
