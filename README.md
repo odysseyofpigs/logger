@@ -26,9 +26,8 @@ https://github.com/mattn/go-sqlite3
 go get github.com/odysseyofpigs/loggerapplication
 ```
 
-# Future Optimization
+# TODO
 
-* Change functions to take User struct pointers to avoid construction of new User 
-structures and returns.
-* Move all user structure functionality to a new package to keep it separated from the 
-login package.
+* Change log.txt files to be sql database files to instead store the information.
+* Then, create function that reads out information from log.db files and writes them to 
+easily readable text files for storage or some other operation.
