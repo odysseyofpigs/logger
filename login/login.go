@@ -31,7 +31,7 @@ func LoginCall(user *userlib.User) bool {
 
         // obtain login credentials
         username, password := getCreds()
-        filename := username + "_log.txt"
+        filename := username + "_log.db"
 
         // create a connection with the database
         database, _ = sql.Open("sqlite3", "./userlog.db")
@@ -91,7 +91,7 @@ func NewUser(user *userlib.User) {
                 fmt.Println("New user has been created!\n")
                 user.ID = id
                 user.Username = username
-                user.Filename = username + "_log.txt"
+                user.Filename = username + "_log.db"
         default:
                 log.Fatal(err)
         }
@@ -104,7 +104,7 @@ func NewUser(user *userlib.User) {
  */
 func insertTable(db *sql.DB, username string, password string) {
         fmt.Println("generating new user profile...")
-        filename := username + "_log.txt"
+        filename := username + "_log.db"
 
         insert := `INSERT INTO users(Username, Password, Filename) VALUES (?, ?, ?)`
         // prepare to insert information into the table of the database
