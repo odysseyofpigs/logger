@@ -84,6 +84,16 @@ func appCall(input string, user userlib.User) userlib.User {
                         writelog.NewEntry(user)
                 }
                 break
+        case "logs":
+                // check if the user is logged in
+                if user.Username == "guest" && user.Filename == "" {
+                        fmt.Println("Error: not logged in\n")
+                } else {
+                        // call list log from userlib
+                        fmt.Printf("Listing all log enteries for %s\n", user.Username)
+                        writelog.ListLogs(user)
+                }
+                break
         case "listall":
                 if user.Username == "guest" && user.Filename == ""{
                         fmt.Println("Error: not logged in\n")
@@ -120,6 +130,7 @@ func helpCall() {
         fmt.Println("who     :: lists current login session credentials")
         fmt.Println("\nLogged in Functionality::")
         fmt.Println("newlog  :: create a new log entry")
+        fmt.Println("logs    :: list all log entries within the system")
         fmt.Println("listall :: lists all users within the system")
         fmt.Println("logout  :: logs the current user out, changes to guest")
         fmt.Print("\n")
