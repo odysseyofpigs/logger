@@ -11,9 +11,10 @@ files for each individual user within the system so that writes can be stored
 independently.
 
 The program allows you to create a new log under your user profile and store it 
-within a personaalized [user]_log.txt file within the 'logs' directory. The program 
-will read up to a set buffer size and append it to the .txt file under the specified 
-username, date, and time.
+within a personal [user]_log.db file within the generated 'logs' directory. The program 
+will read up to a set buffer size and append it to the database file under the specified 
+username, date, and time. The program currently does not support log export functionality 
+and can only be read from within the program.
 
 
 # Dependencies
@@ -28,6 +29,8 @@ go get github.com/odysseyofpigs/loggerapplication
 
 # TODO
 
-* Change log.txt files to be sql database files to instead store the information.
-* Then, create function that reads out information from log.db files and writes them to 
+* I need to create comments at the top of the files that dictate the functionality of the package.
+* Create function that reads out information from log.db files and writes them to 
 easily readable text files for storage or some other operation.
+* Create a soft link file for the application. This requires rewrite of database reading 
+and writing funcitons within the program.
