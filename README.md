@@ -29,8 +29,8 @@ go get github.com/odysseyofpigs/loggerapplication
 
 # TODO
 
-* I need to create comments at the top of the files that dictate the functionality of the package.
 * Create function that reads out information from log.db files and writes them to 
 easily readable text files for storage or some other operation.
 * Create a soft link file for the application. This requires rewrite of database reading 
 and writing funcitons within the program.
+* Implement a library that provides search functionality, Then delete functionality.
