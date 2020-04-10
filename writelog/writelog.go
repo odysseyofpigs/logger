@@ -1,5 +1,17 @@
 package writelog
 
+/**
+ * @file writelog.go
+ * @author odysseyofpigs
+ * @description This file contains all nessecary functionality for talking with
+ *  the User logs.
+ * @functionality The library contains functions that work with the creation
+ *  and initialization of the User log database file. The library also handles
+ *  the creation and insertion of new log entries to the User log database.
+ *  The library also handles the listing of all User log entries to the terminal.
+ */
+
+
 import (
         "fmt"
         "time"

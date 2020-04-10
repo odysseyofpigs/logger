@@ -1,5 +1,17 @@
 package userlib
 
+/**
+ * @file userlib.go
+ * @author odysseyofpigs
+ * @description This file contains the blueprint for the User structure utilized
+ *  to keep track of current user within the system. All functions that initialize
+ *  the User database of the system is handled by this file.
+ * @functionality The library contains functions that create and initialize the User
+ *  database of the system for a new user. The library also contains a function
+ *  that lists all current users within the system.
+ */
+
+
 import (
         "os"
         "log"

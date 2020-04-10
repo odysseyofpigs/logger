@@ -1,5 +1,18 @@
 package main
 
+/**
+ * @file main.go
+ * @author odysseyofpigs
+ * @description this file is the main file for the LoggerApplication.
+ *  Compile and execute this file to run the application. The following
+ *  libraries must be present within local the go workpace for the app to
+ *  function.
+ * @functionality This process contains the used userlib.User structure
+ *  that holds current user information. The process takes user input and
+ *  parses it, calling the appropriate functions from the libraries.
+ */
+
+
 import (
         "fmt"
         "log"

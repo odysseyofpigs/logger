@@ -1,5 +1,16 @@
 package login
 
+/**
+ * @file login.go
+ * @author odysseyofpigs
+ * @description This file contains all login functionality for the current User
+ *  session.
+ * @functionality The library handles the login function for the User. The library
+ *  takes stdin from the terminal in the form of username and password credentials
+ *  to determine whether the user can log into their respective session.
+ */
+
+
 import (
         "fmt"
         "log"
@@ -116,7 +127,7 @@ func insertTable(db *sql.DB, username string, password string) {
 
 
 /**
- * getCreds reads in credentials from user and returns them as strings
+ * getCreds reads in credentials from stdin and returns them as strings
  */
 func getCreds() (string, string) {
         reader := bufio.NewReader(os.Stdin)
