@@ -107,8 +107,17 @@ func appCall(input string, user userlib.User) userlib.User {
                         writelog.ListLogs(user)
                 }
                 break
+        case "export":
+                if user.Username == "guest" && user.Filename == "" {
+                        fmt.Println("Error: not logged in\n")
+                } else {
+                        fmt.Println("Exporting log entires...")
+                        writelog.ExportLogs(user)
+                        fmt.Println("Log entries exported!\n")
+                }
+                break
         case "listall":
-                if user.Username == "guest" && user.Filename == ""{
+                if user.Username == "guest" && user.Filename == "" {
                         fmt.Println("Error: not logged in\n")
                 } else {
                         fmt.Print("\n")
@@ -119,7 +128,7 @@ func appCall(input string, user userlib.User) userlib.User {
                 if user.Username == "guest" && user.Filename == "" {
                         fmt.Println("Error: not logged in\n")
                 } else {
-                        fmt.Printf("Logging %s out...", user.Username)
+                        fmt.Printf("Logging %s out...\n", user.Username)
                         user.ID = 0
                         user.Username = "guest"
                         user.Filename = ""
@@ -132,7 +141,7 @@ func appCall(input string, user userlib.User) userlib.User {
 }
 
 
-/**
+/*
  * helpCall the base help menu
  */
 func helpCall() {
@@ -144,13 +153,14 @@ func helpCall() {
         fmt.Println("\nLogged in Functionality::")
         fmt.Println("newlog  :: create a new log entry")
         fmt.Println("logs    :: list all log entries within the system")
+        fmt.Println("export  :: exports all log enteries within system to txt file")
         fmt.Println("listall :: lists all users within the system")
         fmt.Println("logout  :: logs the current user out, changes to guest")
         fmt.Print("\n")
 }
 
 
-/**
+/*
  * errCheck terminates the program is any error occurs within the process
  */
 func errCheck(err error) {

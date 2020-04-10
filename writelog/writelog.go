@@ -19,6 +19,7 @@ import (
         "strings"
         "log"
         "bufio"
+        "strconv"
         "database/sql"
         "github.com/odysseyofpigs/loggerapplication/userlib"
         // driver for sqlite3 operations
@@ -177,6 +178,7 @@ func ListLogs(user userlib.User) {
                         var time string
                         var note string
 
+                        // list all the logs within the database
                         row, err := database.Query("SELECT id, date, note FROM logs")
                         errCheck(err)
                         fmt.Println("[Notes]::")
@@ -191,15 +193,75 @@ func ListLogs(user userlib.User) {
                         fmt.Println("Error: no information within database\n")
                 }
 
-                // list all logs within file
-
                 // change the directory back
                 err = os.Chdir(prevDir)
         }
 }
 
 
-/**
+// ExportLogs reads all log entries of calling User and writes them to a txt file
+// named [user]_logs.txt
+func ExportLogs(user userlib.User) {
+        // store the current directory
+        prevDir, _ := os.Getwd()
+        // the export file
+        efile := user.Username + "_logs.txt"
+        // first check if logs exists
+        if _, err := os.Stat("logs"); os.IsNotExist(err) {
+                createDir("logs")
+                fmt.Println("Error: no users have been initialized")
+                fmt.Println("use log database does not exist\n")
+        } else {
+                // change the directory to logs
+                err := os.Chdir("logs")
+                errCheck(err)
+
+                // check if the user database exists
+                if checkdb(user.Filename) {
+                        // define database variables
+                        var id int
+                        var time string
+                        var note string
+                        var label string
+
+                        // open that database to read from
+                        database, _ := sql.Open("sqlite3", "./"+user.Filename)
+                        defer database.Close()
+
+                        // Check if the export file exists
+                        if _, err = os.Stat(efile); os.IsNotExist(err) {
+                                // create the file if it does not exist
+                                crexport(efile)
+                        }
+
+                        // open the file to append to it
+                        file, ferr := os.OpenFile(efile, os.O_APPEND | os.O_WRONLY, 0600)
+                        errCheck(ferr)
+                        defer file.Close()
+
+                        // loop through database and get each log entry
+                        row, rerr := database.Query("SELECT id, date, note FROM logs")
+                        errCheck(rerr)
+                        for row.Next() {
+                                row.Scan(&id, &time, &note)
+                                label = strconv.Itoa(id) + " : " + time
+                                // append the info to the file
+                                _, err = file.Write([]byte(label))
+                                errCheck(err)
+                                _, err = file.Write([]byte(note))
+                        }
+
+                } else {
+                        fmt.Println("Error: no information within database\n")
+                }
+
+                // change directory back to previous directory
+                err = os.Chdir(prevDir)
+        }
+}
+
+
+/*
  * createDir creates a new directory of given name
  */
 func createDir(dirname string) {
@@ -207,6 +269,15 @@ func createDir(dirname string) {
         err := os.Mkdir("logs", 0700)
         errCheck(err)
         fmt.Println("new directory...created")
+}
+
+// crexport creates a new export.txt file
+func crexport(file string) {
+        fmt.Println("Generating new export file...")
+        f, err := os.Create(file)
+        errCheck(err)
+        fmt.Println("New export file generated!")
+        f.Close()
 }
 
 
