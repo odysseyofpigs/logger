@@ -19,6 +19,8 @@ and can only be read from within the program.
 
 # Dependencies
 
+Golang version 1.14: https://golang.org/dl/
+
 https://github.com/mattn/go-sqlite3
 
 # Installation
