@@ -13,8 +13,8 @@ independently.
 The program allows you to create a new log under your user profile and store it 
 within a personal [user]_log.db file within the generated 'logs' directory. The program 
 will read up to a set buffer size and append it to the database file under the specified 
-username, date, and time. The program currently does not support log export functionality 
-and can only be read from within the program.
+username, date, and time. The program can write out user log entries to a readable and 
+movable text file generated within the logs directory.
 
 
 # Dependencies
@@ -31,8 +31,6 @@ go get github.com/odysseyofpigs/loggerapplication
 
 # TODO
 
-* Create function that reads out information from log.db files and writes them to 
-easily readable text files for storage or some other operation.
 * Create a soft link file for the application. This requires rewrite of database reading 
 and writing funcitons within the program.
 * Implement a library that provides search functionality, Then delete functionality.
