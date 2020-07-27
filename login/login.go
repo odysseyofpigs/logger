@@ -23,6 +23,9 @@ import (
         _ "github.com/mattn/go-sqlite3"
 )
 
+// dbPath is the global variable used to track the database file
+var dbPath = "/home/ngarcia/DataSpace/src/github.com/odysseyofpigs/loggerapplication/loggerapp/userlog.db"
+
 
 
 // LoginCall checks the user credentials against database
@@ -33,7 +36,7 @@ func LoginCall(user *userlib.User) bool {
         var database *sql.DB
 
         // check that the database exists
-        if _, err := os.Stat("userlog.db"); os.IsNotExist(err) {
+        if _, err := os.Stat(dbPath); os.IsNotExist(err) {
                 // the database does not exist, create a new one
                 userlib.CreateDataBase(database)
                 fmt.Println("create new user with 'newuser' command\n")
@@ -45,7 +48,7 @@ func LoginCall(user *userlib.User) bool {
         filename := username + "_log.db"
 
         // create a connection with the database
-        database, _ = sql.Open("sqlite3", "./userlog.db")
+        database, _ = sql.Open("sqlite3", dbPath)
         defer database.Close()
 
         // Query through table to see if login credentials match
@@ -78,13 +81,13 @@ func NewUser(user *userlib.User) {
         var database *sql.DB
 
         // check that the database exists
-        if _, err := os.Stat("userlog.db"); os.IsNotExist(err) {
+        if _, err := os.Stat(dbPath); os.IsNotExist(err) {
                 // if userlog does not exist, create database
                 userlib.CreateDataBase(database)
         }
 
         // connect to the userlog database
-        database, _ = sql.Open("sqlite3", "./userlog.db")
+        database, _ = sql.Open("sqlite3", dbPath)
 
         // insert new user to database
         username, password := getCreds()

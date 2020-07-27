@@ -26,19 +26,22 @@ import (
         _ "github.com/mattn/go-sqlite3"
 )
 
-// NewEntry creates a new entry to the log.db file
+var logsdir = "/home/ngarcia/DataSpace/src/github.com/odysseyofpigs/loggerapplication/loggerapp/logs/"
+
+
+// NewEntry creates a new entry to the user log.db file
 func NewEntry(user userlib.User) {
         // define file path
         prevDir, _ := os.Getwd()
 
         //check that the logs directory exists
-        if _, err := os.Stat("logs"); os.IsNotExist(err) {
+        if _, err := os.Stat(logsdir); os.IsNotExist(err) { // changed
                 // logs directory does not exist, create it
-                createDir("logs")
+                createDir(logsdir) // changed
         }
 
         //change the directory to the logs directory
-        err := os.Chdir("logs")
+        err := os.Chdir(logsdir) // changed
         errCheck(err)
 
         //check to see if the [user]_log.db file exists
@@ -51,6 +54,7 @@ func NewEntry(user userlib.User) {
         err = os.Chdir(prevDir)
         errCheck(err)
 }
+
 
 
 /**
@@ -114,6 +118,7 @@ func writeToFile(filename string) {
 }
 
 
+
 // checkdb checks if the given database exists, if not creates it and
 // populates the new database with a respective table. returns a bool
 // value: true if the file exists, false otherwise
@@ -138,6 +143,7 @@ func checkdb(filename string) bool {
 }
 
 
+
 // setTable sets the table within the given database
 func setTable(db *sql.DB) {
         create := `CREATE TABLE logs (
@@ -152,19 +158,20 @@ func setTable(db *sql.DB) {
 }
 
 
+
 // ListLogs lists all log entries for the given user
 func ListLogs(user userlib.User) {
         // get prev dir
         prevDir, _ := os.Getwd()
 
         // check if logs even exists
-        if _, err := os.Stat("logs"); os.IsNotExist(err) {
-                createDir("logs")
+        if _, err := os.Stat(logsdir); os.IsNotExist(err) {
+                createDir(logsdir)
                 fmt.Println("Error: no users have been initialized")
                 fmt.Println("use log database does not exist\n")
         } else {
                 // change directory to logs
-                err := os.Chdir("logs")
+                err := os.Chdir(logsdir)
                 errCheck(err)
 
                 // check that the user_log.db file exists
@@ -199,6 +206,7 @@ func ListLogs(user userlib.User) {
 }
 
 
+
 // ExportLogs reads all log entries of calling User and writes them to a txt file
 // named [user]_logs.txt
 func ExportLogs(user userlib.User) {
@@ -207,13 +215,13 @@ func ExportLogs(user userlib.User) {
         // the export file
         efile := user.Username + "_logs.txt"
         // first check if logs exists
-        if _, err := os.Stat("logs"); os.IsNotExist(err) {
-                createDir("logs")
+        if _, err := os.Stat(logsdir); os.IsNotExist(err) {
+                createDir(logsdir)
                 fmt.Println("Error: no users have been initialized")
                 fmt.Println("use log database does not exist\n")
         } else {
                 // change the directory to logs
-                err := os.Chdir("logs")
+                err := os.Chdir(logsdir)
                 errCheck(err)
 
                 // check if the user database exists
@@ -261,15 +269,17 @@ func ExportLogs(user userlib.User) {
 }
 
 
+
 /*
  * createDir creates a new directory of given name
  */
 func createDir(dirname string) {
         fmt.Printf("no '%s' directory found....creating new directory\n", dirname)
-        err := os.Mkdir("logs", 0700)
+        err := os.Mkdir(logsdir, 0700)
         errCheck(err)
         fmt.Println("new directory...created")
 }
+
 
 // crexport creates a new export.txt file
 func crexport(file string) {
@@ -279,6 +289,7 @@ func crexport(file string) {
         fmt.Println("New export file generated!")
         f.Close()
 }
+
 
 
 // errCheck checks if any errors have occured

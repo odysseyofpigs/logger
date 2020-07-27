@@ -28,13 +28,16 @@ type User struct {
         Filename string
 }
 
+// dbPath is the global variable used to track the database file
+var dbPath = "/home/ngarcia/DataSpace/src/github.com/odysseyofpigs/loggerapplication/loggerapp/userlog.db"
 
-// ListAll lists all the users within the database
+
+// ListAll lists all the users within the database by decending id number
 func ListAll() {
         var database *sql.DB
 
         // check if userlog.db exists
-        if _, err := os.Stat("userlog.db"); os.IsNotExist(err) {
+        if _, err := os.Stat(dbPath); os.IsNotExist(err) {
                 // create the database and return
                 CreateDataBase(database)
                 fmt.Println("Error: no users within database\n")
@@ -42,7 +45,7 @@ func ListAll() {
                 fmt.Println("Users::")
                 fmt.Println("----------------")
                 // print all the users within the database
-                database, _ = sql.Open("sqlite3", "./userlog.db")
+                database, _ = sql.Open("sqlite3", dbPath)
                 defer database.Close()
 
                 rows, err := database.Query("SELECT id, Username FROM users")
@@ -59,18 +62,19 @@ func ListAll() {
 }
 
 
+
 // CreateDataBase creates a new database file and calls to initialize a
 // completely new table
 func CreateDataBase(db *sql.DB) {
         fmt.Println("No database found....creating new database file")
         // creat the new database file
-        file, err := os.Create("userlog.db")
+        file, err := os.Create(dbPath)
         errCheck(err)
         fmt.Println("database creation...complete")
         file.Close()
 
         // initialize the database with a new table
-        db, _ = sql.Open("sqlite3", "./userlog.db")
+        db, _ = sql.Open("sqlite3", dbPath)
         defer db.Close()
 
         // call table creation
@@ -79,7 +83,9 @@ func CreateDataBase(db *sql.DB) {
 }
 
 
+
 // createTable initializes the given database with a new table
+// the database passed must be opened
 func createTable(db *sql.DB) {
         create := `CREATE TABLE users (
                 "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
@@ -93,6 +99,7 @@ func createTable(db *sql.DB) {
         // execute the prepared table statement
         statement.Exec()
 }
+
 
 
 // errCheck checks if any errors have occured
