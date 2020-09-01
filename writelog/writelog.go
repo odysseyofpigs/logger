@@ -21,34 +21,35 @@ import (
         "bufio"
         "strconv"
         "database/sql"
-        "github.com/odysseyofpigs/loggerapplication/userlib"
         // driver for sqlite3 operations
         _ "github.com/mattn/go-sqlite3"
 )
 
-var logsdir = "/home/ngarcia/DataSpace/src/github.com/odysseyofpigs/loggerapplication/loggerapp/logs/"
-
+// logsdir is a global variable used to track the logs storage directory
+var logsdir = "/home/ngarcia/Documents/logs/"
 
 // NewEntry creates a new entry to the user log.db file
-func NewEntry(user userlib.User) {
+func NewEntry(username string) {
+        // create the file name
+        var filename = username + "_log.db"
         // define file path
         prevDir, _ := os.Getwd()
 
         //check that the logs directory exists
         if _, err := os.Stat(logsdir); os.IsNotExist(err) { // changed
                 // logs directory does not exist, create it
-                createDir(logsdir) // changed
+                createDir(logsdir)
         }
 
         //change the directory to the logs directory
-        err := os.Chdir(logsdir) // changed
+        err := os.Chdir(logsdir)
         errCheck(err)
 
         //check to see if the [user]_log.db file exists
-        _ = checkdb(user.Filename)
+        _ = checkdb(filename)
 
         // create a new log within the database
-        writeToFile(user.Filename)
+        writeToFile(filename)
 
         // change the directory back to main directory
         err = os.Chdir(prevDir)
@@ -160,7 +161,7 @@ func setTable(db *sql.DB) {
 
 
 // ListLogs lists all log entries for the given user
-func ListLogs(user userlib.User) {
+func ListLogs(filename string) {
         // get prev dir
         prevDir, _ := os.Getwd()
 
@@ -169,51 +170,52 @@ func ListLogs(user userlib.User) {
                 createDir(logsdir)
                 fmt.Println("Error: no users have been initialized")
                 fmt.Println("use log database does not exist\n")
-        } else {
-                // change directory to logs
-                err := os.Chdir(logsdir)
-                errCheck(err)
-
-                // check that the user_log.db file exists
-                if checkdb(user.Filename) {
-                        // open the database to read
-                        database, _ := sql.Open("sqlite3", "./"+user.Filename)
-                        defer database.Close()
-
-                        // set variables to contain information from database
-                        var id int
-                        var time string
-                        var note string
-
-                        // list all the logs within the database
-                        row, err := database.Query("SELECT id, date, note FROM logs")
-                        errCheck(err)
-                        fmt.Println("[Notes]::")
-                        for row.Next() {
-                                row.Scan(&id, &time, &note)
-                                // print the information
-                                fmt.Printf("%d : %s\n", id, time)
-                                fmt.Printf("%s\n\n", note)
-                        }
-                } else {
-                        // there is no information within the user log database
-                        fmt.Println("Error: no information within database\n")
-                }
-
-                // change the directory back
-                err = os.Chdir(prevDir)
+                return
         }
+        // change directory to logs
+        err := os.Chdir(logsdir)
+        errCheck(err)
+
+        // check that the user_log.db file exists
+        if checkdb(filename) {
+                // open the database to read
+                database, _ := sql.Open("sqlite3", "./"+filename)
+                defer database.Close()
+
+                // set variables to contain information from database
+                var id int
+                var time string
+                var note string
+
+                // list all the logs within the database
+                row, err := database.Query("SELECT id, date, note FROM logs")
+                errCheck(err)
+                fmt.Println("[Notes]::")
+                for row.Next() {
+                        row.Scan(&id, &time, &note)
+                        // print the information
+                        fmt.Printf("%d : %s\n", id, time)
+                        fmt.Printf("%s\n\n", note)
+                }
+        } else {
+                // there is no information within the user log database
+                fmt.Println("Error: no information within database\n")
+        }
+
+        // change the directory back
+        err = os.Chdir(prevDir)
 }
 
 
 
 // ExportLogs reads all log entries of calling User and writes them to a txt file
 // named [user]_logs.txt
-func ExportLogs(user userlib.User) {
+func ExportLogs(username string) {
         // store the current directory
         prevDir, _ := os.Getwd()
         // the export file
-        efile := user.Username + "_logs.txt"
+        efile := username + "_logs.txt"
+        filename := username + "_log.db"
         // first check if logs exists
         if _, err := os.Stat(logsdir); os.IsNotExist(err) {
                 createDir(logsdir)
@@ -225,7 +227,7 @@ func ExportLogs(user userlib.User) {
                 errCheck(err)
 
                 // check if the user database exists
-                if checkdb(user.Filename) {
+                if checkdb(filename) {
                         // define database variables
                         var id int
                         var time string
@@ -233,7 +235,7 @@ func ExportLogs(user userlib.User) {
                         var label string
 
                         // open that database to read from
-                        database, _ := sql.Open("sqlite3", "./"+user.Filename)
+                        database, _ := sql.Open("sqlite3", "./"+filename)
                         defer database.Close()
 
                         // Check if the export file exists

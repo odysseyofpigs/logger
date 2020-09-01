@@ -19,25 +19,31 @@ import (
         "strings"
         "bufio"
         "os"
-        "github.com/odysseyofpigs/loggerapplication/login"
         "github.com/odysseyofpigs/loggerapplication/writelog"
-        "github.com/odysseyofpigs/loggerapplication/userlib"
+        "github.com/odysseyofpigs/loggerapplication/userinfo"
 )
+
+
+// userInfo stores all user information
+type userT struct {
+        username string
+}
+
 
 func main() {
         fmt.Println("LoggerApp!")
         fmt.Println("Welcome, to the logger application")
         fmt.Println("type: 'help' for assistance\n")
 
-        /* initialize user information */
-        user := userlib.User{0, "guest", ""}
+        // initialize user information
+        var user = userT{userinfo.FindUserName()}
 
         /* read user input */
         input := readInput()
 
         /* check input until 'exit' is given */
         for input != "exit" {
-                user = appCall(input, user)
+                appCall(input, user)
                 input = readInput()
         }
 
@@ -69,75 +75,32 @@ func readInput() string {
 /**
  * appCall handles the function call given by the user
  */
-func appCall(input string, user userlib.User) userlib.User {
+func appCall(input string, user userT) {
         switch input {
         case "help":
                 helpCall()
                 break
         case "who":
-                login.DisplayUser(user)
-                break
-        case "login":
-                var loginStat bool
-                loginStat = login.LoginCall(&user)
-                if loginStat {
-                        fmt.Printf("%s has logged in!\n\n", user.Username)
-                }
-                break
-        case "newuser":
-                login.NewUser(&user)
+                fmt.Println(user.username, "\n")
                 break
         case "newlog":
-                // check if the user is logged in
-                if user.Username == "guest" && user.Filename == "" {
-                        fmt.Println("Error: not logged in\n")
-                } else {
-                        fmt.Printf("creating new log for %s\n", user.Username)
-                        // create a new log entry for the user
-                        writelog.NewEntry(user)
-                }
+                fmt.Printf("creating new log for %s\n", user.username)
+                // create a new log entry for the user
+                writelog.NewEntry(user.username)
                 break
-        case "logs":
-                // check if the user is logged in
-                if user.Username == "guest" && user.Filename == "" {
-                        fmt.Println("Error: not logged in\n")
-                } else {
-                        // call list log from userlib
-                        fmt.Printf("Listing all log enteries for %s\n", user.Username)
-                        writelog.ListLogs(user)
-                }
+        case "listlogs":
+                // call list log function from writelog
+                fmt.Printf("Listing all log enteries for %s\n", user.username)
+                writelog.ListLogs(user.username + "_log.db")
                 break
         case "export":
-                if user.Username == "guest" && user.Filename == "" {
-                        fmt.Println("Error: not logged in\n")
-                } else {
-                        fmt.Println("Exporting log entires...")
-                        writelog.ExportLogs(user)
-                        fmt.Println("Log entries exported!\n")
-                }
-                break
-        case "listall":
-                if user.Username == "guest" && user.Filename == "" {
-                        fmt.Println("Error: not logged in\n")
-                } else {
-                        fmt.Print("\n")
-                        userlib.ListAll()
-                }
-                break
-        case "logout":
-                if user.Username == "guest" && user.Filename == "" {
-                        fmt.Println("Error: not logged in\n")
-                } else {
-                        fmt.Printf("Logging %s out...\n", user.Username)
-                        user.ID = 0
-                        user.Username = "guest"
-                        user.Filename = ""
-                }
+                fmt.Println("Exporting log entires...")
+                writelog.ExportLogs(user.username)
+                fmt.Println("Log entries exported!\n")
                 break
         default:
                 fmt.Println("::unknown command given::\n")
         } // end of switch
-        return user
 }
 
 
@@ -147,15 +110,11 @@ func appCall(input string, user userlib.User) userlib.User {
 func helpCall() {
         fmt.Println("\nHelp Screen::")
         fmt.Println("--------------------------------------------")
-        fmt.Println("login   :: login to your account")
-        fmt.Println("newuser :: create a new user account")
-        fmt.Println("who     :: lists current login session credentials")
-        fmt.Println("\nLogged in Functionality::")
+        fmt.Println("who     :: lists current system session credentials")
         fmt.Println("newlog  :: create a new log entry")
-        fmt.Println("logs    :: list all log entries within the system")
+        fmt.Println("listlogs:: list all log entries within the system")
         fmt.Println("export  :: exports all log enteries within system to txt file")
-        fmt.Println("listall :: lists all users within the system")
-        fmt.Println("logout  :: logs the current user out, changes to guest")
+        fmt.Println("exit    :: exits from the logger application")
         fmt.Print("\n")
 }
 
